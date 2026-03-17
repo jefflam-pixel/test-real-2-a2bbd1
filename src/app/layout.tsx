@@ -1,8 +1,45 @@
 "use client";
 import "./globals.css";
-import React, { useState } from "react";
+import React, { useState, Component } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
+// Error Boundary — catches render errors in page content and shows
+// a friendly inline message instead of crashing the entire app.
+class ErrorBoundary extends Component<
+  { children: React.ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex items-center justify-center min-h-screen bg-gray-50 p-8">
+          <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8 text-center">
+            <div className="text-5xl mb-4">⚠️</div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Something went wrong</h2>
+            <p className="text-sm text-gray-500 mb-6">
+              {this.state.error?.message || "An unexpected error occurred."}
+            </p>
+            <button
+              onClick={() => this.setState({ hasError: false, error: null })}
+              className="px-6 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const navLinks = [
   { href: "/", label: "Dashboard" },
@@ -70,9 +107,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </aside>
 
-        {/* Main content */}
+        {/* Main content — wrapped in ErrorBoundary so sidebar stays visible on errors */}
         <main className="lg:ml-64 min-h-screen">
-          {children}
+          <ErrorBoundary>
+            {children}
+          </ErrorBoundary>
         </main>
       </body>
     </html>

@@ -1,9 +1,28 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
+
 export default function Home() {
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    try {
+      // Pre-warm API routes so first navigation is faster
+      const routes = ["/tasks", "/task-prioritization"];
+      routes.forEach((r) => fetch("/api" + r).catch(() => {}));
+    } catch (e: any) {
+      setError(e.message || "Failed to initialize");
+    }
+  }, []);
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-900 to-blue-900 text-white p-8">
       <div className="max-w-4xl mx-auto">
+        {error && (
+          <div className="mb-6 bg-red-500/20 border border-red-400/30 text-red-100 p-4 rounded-lg flex items-center justify-between">
+            <span>{error}</span>
+            <button onClick={() => setError(null)} className="ml-4 text-red-200 hover:text-white font-bold">✕</button>
+          </div>
+        )}
         <div className="text-center mb-12">
           <h1 className="text-5xl font-bold mb-4">test real 2</h1>
           <p className="text-xl text-blue-200">AI-Generated Production System</p>
