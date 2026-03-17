@@ -1,0 +1,37 @@
+CREATE TABLE IF NOT EXISTS p_a2bbd1f4_tasks (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  title varchar(255) NOT NULL,
+  description text,
+  status varchar(50) DEFAULT 'pending' CHECK (status IN ('pending', 'in_progress', 'completed')),
+  priority varchar(20) DEFAULT 'medium' CHECK (priority IN ('low', 'medium', 'high')),
+  due_date date,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+ALTER TABLE p_a2bbd1f4_tasks ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow all access" ON p_a2bbd1f4_tasks FOR ALL USING (true) WITH CHECK (true);
+
+CREATE INDEX IF NOT EXISTS idx_p_a2bbd1f4_tasks_status ON p_a2bbd1f4_tasks(status);
+CREATE INDEX IF NOT EXISTS idx_p_a2bbd1f4_tasks_priority ON p_a2bbd1f4_tasks(priority);
+CREATE INDEX IF NOT EXISTS idx_p_a2bbd1f4_tasks_due_date ON p_a2bbd1f4_tasks(due_date);
+CREATE INDEX IF NOT EXISTS idx_p_a2bbd1f4_tasks_created_at ON p_a2bbd1f4_tasks(created_at);
+
+CREATE TABLE IF NOT EXISTS p_a2bbd1f4_task_prioritization (
+  id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+  title varchar(255) NOT NULL,
+  description text,
+  priority_level varchar(20) DEFAULT 'Medium' CHECK (priority_level IN ('Low', 'Medium', 'High')),
+  urgency varchar(20) DEFAULT 'Normal' CHECK (urgency IN ('Low', 'Normal', 'Urgent')),
+  importance varchar(20) DEFAULT 'Normal' CHECK (importance IN ('Low', 'Normal', 'High')),
+  status varchar(20) DEFAULT 'Pending' CHECK (status IN ('Pending', 'In Progress', 'Completed', 'On Hold')),
+  estimated_hours decimal(4,1) DEFAULT 1.0,
+  due_date date,
+  created_at timestamptz DEFAULT now(),
+  updated_at timestamptz DEFAULT now()
+);
+
+ALTER TABLE p_a2bbd1f4_task_prioritization ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Allow all access" ON p_a2bbd1f4_task_prioritization FOR ALL USING (true) WITH CHECK (true);
